@@ -1,4 +1,4 @@
-# 🧩 Performance Analysis of Blockchain-Based Decentralized Chat & File Transfer on LAN 
+# 🧩 Performance Analysis of Blockchain-Based Decentralized Chat & File Transfer on LAN
 
 A fully interactive, **secure**, decentralized **LAN chat + file share** built on a blockchain-style append-only ledger.  
 Every chat/file TX becomes a block; peers sync the longest valid chain and **verify on-disk files**.  
@@ -6,32 +6,49 @@ Now with **message deduplication**, **tamper-alert cooldowns**, faster UI dispat
 
 ---
 
-## 🚀 Overview
-This application demonstrates how blockchain principles can harden day‑to‑day collaboration on a local network. Each message or file is recorded immutably; peers reconcile forks via a chain‑sync protocol and continuously check local files for tampering. When a mismatch is detected, a **TAMPER_ALERT** is broadcast (without spam), and a one‑click **Fix Files** tool requests a clean copy from healthy peers.
+## 🚀 Overview / Introduction (Revised for Computer Network Emphasis)
 
-Recent updates include:
-- **Deduplicated network messages** (no more repeated alerts).
-- **Per‑file tamper alert cooldown** + global anti‑spam controls.
-- **Explorer highlight:** tampered/missing blocks render with a **red accent**.
-- **Faster GUI event loop**; lower perceived latency.
-- Safer shutdown to avoid Tk “application destroyed” errors.
+This application is a **Blockchain-Based Decentralized Chat and File Transfer System** designed to demonstrate how **Computer Network principles** can be applied to achieve secure and resilient peer-to-peer (P2P) communication across a **Local Area Network (LAN)**.  
+
+Each node operates as an independent peer connected via **TCP sockets**, exchanging structured messages such as `BLOCK`, `CHAT`, `FILE_TRANSFER`, and `VERIFY_REQUEST`. These interactions model real-world **network packet exchanges** and **application-layer protocol design**.  
+
+The system enforces **network integrity** through **chain synchronization**, **heartbeat detection**, and **rate-limited broadcasting**, ensuring reliable and congestion-free message delivery between peers. It uses a **blockchain-style append-only ledger** for maintaining message and file history, which allows verification and tamper detection across nodes in the LAN.  
+
+By integrating **concepts of reliability, concurrency, synchronization, and distributed communication**, this project provides a practical learning model for students studying **Computer Networks and Distributed Systems**, showing how secure data propagation and consensus mechanisms can operate in real-time.
 
 ---
 
-## 🛡️ Key Features
-- **Blockchain Backbone:** Each TX (chat/file) is a block; longest valid chain wins.
-- **Peer Synchronization:** `REQUEST_CHAIN` / `RESPONSE_CHAIN` + on‑append rebroadcast.
-- **Cross‑Network Tamper Checks:** Periodic local verify + broadcast `TAMPER_ALERT` and peer replies for `TAMPER_CHECK_REQUEST`.
-- **Smart Anti‑Spam:**
-  - Message **dedup IDs** to drop repeats.
-  - **Per‑file cooldown** to throttle repeated tamper alerts.
-  - **Rate limiter** (token bucket) per remote peer.
-- **One‑Click Restore:** `🛠 Fix Files` sends `FILE_SYNC_REQUEST`; a healthy peer replies with `FILE_SYNC_RESPONSE` to restore the exact bytes.
-- **Explorer with Red Highlight:** Tampered/missing blocks are visually flagged.
-- **Live Metrics:** Latency, throughput, and simulated loss visualized with Matplotlib.
-- **Cross‑Platform Notifications:** macOS (osascript) / Windows (win10toast) optional.
-- **Resource Safety:** Bounded queues, size caps, timeouts, context managers.
-- **Security Extras:** Path traversal prevention, input validation, thread‑safe chain.
+## 🛡️ Key Features 
+
+- **🌐 Peer-to-Peer Networking (Socket Programming):**  
+  Each node connects directly with others using Python’s `socket` module, enabling **decentralized TCP communication** and packet-based data transfer within the LAN.  
+
+- **🔗 Blockchain-Style Synchronization:**  
+  Nodes maintain and exchange chains using `REQUEST_CHAIN` and `RESPONSE_CHAIN` messages — representing a **custom application-layer network protocol** that ensures consistency across distributed peers.  
+
+- **📡 Heartbeat and Timeout Management:**  
+  Implements a **liveness detection system** (`HEARTBEAT_INTERVAL`, `PEER_TIMEOUT`) where nodes periodically check peer availability — similar to **keep-alive** mechanisms in networking.  
+
+- **🚨 Tamper Detection and Broadcast Alerts:**  
+  Uses **broadcast packets (`TAMPER_ALERT`)** to notify all connected peers of file integrity issues, illustrating **network event propagation** and fault reporting across a decentralized topology.  
+
+- **⚙️ Rate Limiting and Deduplication:**  
+  Integrates **traffic management** controls through a **token-bucket rate limiter** and **message ID deduplication**, preventing packet flooding and maintaining efficient bandwidth usage.  
+
+- **📈 Network Performance Metrics:**  
+  The built-in analyzer visualizes **latency**, **throughput**, and **simulated packet loss (`PACKET_LOSS_PROB`)** using Matplotlib — reflecting core **network performance evaluation parameters**.  
+
+- **🔁 File Transfer with Hash Verification:**  
+  Demonstrates reliable **end-to-end transmission** with file hashing (`SHA-256`) and confirmation messages, similar to **checksum validation** in TCP/IP systems.  
+
+- **🧩 Fault Recovery via File Synchronization:**  
+  On tamper or corruption, nodes broadcast `FILE_SYNC_REQUEST` and receive clean copies from healthy peers — showing **distributed recovery and redundancy**.  
+
+- **🧱 Secure Communication and Input Validation:**  
+  Protects against **path traversal**, invalid input, and oversized packet attacks, ensuring **network-layer data integrity** and secure resource access.  
+
+- **📊 Cross-Platform LAN Operation:**  
+  Works seamlessly across **Windows, macOS, and Linux** within a shared LAN, teaching how **port addressing**, **firewall configuration**, and **IP-based peer discovery** influence distributed applications.
 
 ---
 
@@ -235,7 +252,7 @@ GUI (CustomTkinter) ──► GUI Queue (batched) ──► Dispatcher
 ---
 
 ## 🏁 Conclusion
-This application offers a practical, classroom‑friendly view of **distributed integrity**, **peer coordination**, and **resilience**. With deduplication, cooldowns, and visual tamper flags, it’s ideal for demonstrating how blockchain‑style systems behave under failure and recovery.
+This system offers a practical exploration of Computer Network protocols, peer coordination, and blockchain integrity verification. By integrating rate-limited broadcasting, deduplication, heartbeats, and tamper alert recovery, it demonstrates how distributed communication can be both efficient and secure in a LAN environment — blending networking fundamentals with blockchain design.
 
 ---
 
