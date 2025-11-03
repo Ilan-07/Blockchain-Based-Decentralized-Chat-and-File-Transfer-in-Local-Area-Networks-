@@ -205,14 +205,20 @@ python blockchain_chat.py
 ---
 
 ## 🧯 Troubleshooting
-| Symptom | Likely Cause | Fix |
-|---|---|---|
-| “application has been destroyed” on exit | After‑callbacks firing post‑close | Use the latest build (cancels timers/animation on shutdown). |
-| `f-string: unmatched ']'` | Edited a log string incorrectly | Use the provided code; avoid inserting stray braces/brackets. |
-| `'App' has no attribute _show_start_dialog` | Partial copy of the file | Re‑download the full script; the method is defined in `App`. |
-| Peers don’t appear | Not connected / firewall | Add peers in the dialog; allow Python through the firewall. |
-| Messages feel slow | Large file in flight / rate‑limit hit | Send large files when idle; default rate limit is generous. |
-| No restore happens | Only one node running | Start at least two nodes; a healthy peer must serve the file. |
+| **Error / Symptom** | **Likely Cause** | **Fix / Solution** |
+|----------------------|------------------|--------------------|
+| `application has been destroyed` | Tkinter GUI is closed while background threads are still running | Use the latest version — timers and animation callbacks now cancel on shutdown. |
+| `Address already in use` | The chosen port is already active or not released yet | Use a different port (e.g., 5002 → 5003) or wait a few seconds before restarting. |
+| `Connection refused` | Target peer not reachable or incorrect IP | Verify LAN IPs, open firewall for Python, and check peer’s port. |
+| `Failed to send file` | File too large or network timeout | Check `MAX_FILE_SIZE` limit (default 50MB) and LAN speed. |
+| `Peer not responding` | Peer node crashed or timed out | Relaunch peer and re-enter connection details. |
+| `f-string unmatched ']'` | Code edited with wrong formatting | Use the unmodified code version. |
+| `OSError: [Errno 48] Address already in use` | Socket not closed from previous run | Wait 10–15 seconds or restart your device. |
+| `TAMPER_ALERT` repeating too often | Cooldown not applied or too short | Increase `TAMPER_ALERT_COOLDOWN` value in code. |
+| `Permission denied` while saving files | Downloads folder not writable | Run the script from a directory with write access. |
+| GUI freezes on sending file | Large file transfers blocking main thread | Avoid sending >30 MB files concurrently; optimize thread use. |
+| `Peers not visible` | Incorrect peer connection string | Use format `192.168.x.y:port` and ensure both peers are on same LAN. |
+
 
 ---
 
