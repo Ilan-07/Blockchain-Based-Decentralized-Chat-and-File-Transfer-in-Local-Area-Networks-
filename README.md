@@ -1,340 +1,257 @@
-# 🧩 Performance Analysis of Blockchain-Based Decentralized Chat and File Transfer in Local Area Networks​
+# 🧩 Performance Analysis of Blockchain-Based Decentralized Chat & File Transfer on LAN 
 
-### 🚀 Overview
-This project implements a **fully interactive, secure, and decentralized LAN chat application** built on **blockchain principles**.  
-Each message or file transfer is recorded as a **block**, ensuring **tamper-proof communication** and **transparent synchronization** among all peers in the local network.
+A fully interactive, **secure**, decentralized **LAN chat + file share** built on a blockchain-style append-only ledger.  
+Every chat/file TX becomes a block; peers sync the longest valid chain and **verify on-disk files**.  
+Now with **message deduplication**, **tamper-alert cooldowns**, faster UI dispatch, and **red-highlighted blocks** in the explorer on tamper.
 
 ---
 
-### 🛡️ Key Features
-- **Blockchain Backbone:** Every message is stored as a verifiable block.  
-- **Peer Synchronization:** Automatic request/response protocol ensures full chain consistency across all connected peers.  
-- **Tamper Detection:** Detects and broadcasts file or block modifications with live alerts.  
-- **Real-Time Metrics:** Graphical analysis of latency, throughput, and packet loss.  
-- **Blockchain Visualizer:** Interactive view of the chain, with block-level details.  
-- **Cross-Platform Notifications:** Desktop alerts for incoming messages or tamper events.  
-- **Persistent Peer Colors:** Each node is color-coded for easy identification.  
-- **Enhanced Security:**  
-  - Thread-safe blockchain access  
-  - Input sanitization  
-  - Path traversal prevention  
-  - Rate-limiting and message size checks  
-  - Bounded memory usage  
+## 🚀 Overview
+This application demonstrates how blockchain principles can harden day‑to‑day collaboration on a local network. Each message or file is recorded immutably; peers reconcile forks via a chain‑sync protocol and continuously check local files for tampering. When a mismatch is detected, a **TAMPER_ALERT** is broadcast (without spam), and a one‑click **Fix Files** tool requests a clean copy from healthy peers.
+
+Recent updates include:
+- **Deduplicated network messages** (no more repeated alerts).
+- **Per‑file tamper alert cooldown** + global anti‑spam controls.
+- **Explorer highlight:** tampered/missing blocks render with a **red accent**.
+- **Faster GUI event loop**; lower perceived latency.
+- Safer shutdown to avoid Tk “application destroyed” errors.
+
+---
+
+## 🛡️ Key Features
+- **Blockchain Backbone:** Each TX (chat/file) is a block; longest valid chain wins.
+- **Peer Synchronization:** `REQUEST_CHAIN` / `RESPONSE_CHAIN` + on‑append rebroadcast.
+- **Cross‑Network Tamper Checks:** Periodic local verify + broadcast `TAMPER_ALERT` and peer replies for `TAMPER_CHECK_REQUEST`.
+- **Smart Anti‑Spam:**
+  - Message **dedup IDs** to drop repeats.
+  - **Per‑file cooldown** to throttle repeated tamper alerts.
+  - **Rate limiter** (token bucket) per remote peer.
+- **One‑Click Restore:** `🛠 Fix Files` sends `FILE_SYNC_REQUEST`; a healthy peer replies with `FILE_SYNC_RESPONSE` to restore the exact bytes.
+- **Explorer with Red Highlight:** Tampered/missing blocks are visually flagged.
+- **Live Metrics:** Latency, throughput, and simulated loss visualized with Matplotlib.
+- **Cross‑Platform Notifications:** macOS (osascript) / Windows (win10toast) optional.
+- **Resource Safety:** Bounded queues, size caps, timeouts, context managers.
+- **Security Extras:** Path traversal prevention, input validation, thread‑safe chain.
 
 ---
 
 ## ⚙️ System Requirements
-
-- **Python:** Version 3.10 or later
-- **Operating System:** Windows / macOS / Linux
-- **Network:** All peers connected to the same LAN (via WiFi or Ethernet)
+- **Python:** 3.10+
+- **OS:** Windows / macOS / Linux
+- **Network:** Devices on the same LAN (Wi‑Fi or Ethernet)
 
 ---
 
-## 🐍 Install Python (Step-by-step)
-
-Follow the instructions for your operating system to install Python and prepare the environment.
-
-### macOS (recommended: Homebrew)
-1. **Install Homebrew** (if you don't have it):
-   ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   ```
-2. **Install Python 3.10+ with Homebrew**:
-   ```bash
-   brew update
-   brew install python@3.10
-   ```
-3. **Ensure `python3` and `pip3` refer to the installed Python**:
-   ```bash
-   python3 --version
-   pip3 --version
-   ```
-4. (Optional) **Create and activate a virtual environment**:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
+## 🐍 Install Python
+### macOS (Homebrew)
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install python
+python3 --version
+pip3 --version
+```
+(Optional) create a venv:
+```bash
+python3 -m venv venv && source venv/bin/activate
+```
 
 ### Windows
-1. **Download the Python installer** from the official site: https://www.python.org/downloads/windows/ (choose 3.10+).  
-2. **Run the installer** and **check “Add Python to PATH”** on the first installation screen.  
-3. After installation, verify in PowerShell / Command Prompt:
-   ```powershell
-   python --version
-   pip --version
-   ```
-4. (Optional) **Create and activate a virtual environment**:
-   ```powershell
-   python -m venv venv
-   .\venv\Scripts\activate
-   ```
-
-### Linux (Ubuntu / Debian)
-1. **Update package list**:
-   ```bash
-   sudo apt update
-   ```
-2. **Install Python 3.10+ and pip**:
-   ```bash
-   sudo apt install -y python3 python3-venv python3-pip
-   ```
-3. **Verify installation**:
-   ```bash
-   python3 --version
-   pip3 --version
-   ```
-4. (Optional) **Create and activate a virtual environment**:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-
-> **Note:** If your distribution uses `python` for Python 2, use `python3` and `pip3` commands instead.
-
----
-
-## 🧩 Dependencies
-
-Make sure these dependencies are installed (automatically handled via `requirements.txt`):
-
-```
-customtkinter==5.2.2
-plyer==2.1.0
-matplotlib==3.8.0
-networkx==3.2.1
-numpy==1.26.0
-pandas==2.1.1
-uuid==1.30
+- Download Python 3.10+ from python.org → **check “Add Python to PATH.”**
+```powershell
+python --version
+pip --version
+python -m venv venv
+.\venv\Scripts\activate
 ```
 
-To install them manually:
+### Linux (Debian/Ubuntu)
 ```bash
-pip install -r requirements.txt
+sudo apt update
+sudo apt install -y python3 python3-pip python3-venv python3-tk
+python3 --version
+pip3 --version
 ```
 
+> On macOS/Linux you may need `python3` / `pip3` instead of `python` / `pip`.
+
 ---
 
-### ⚙️ How to Run
-1. Clone this repository:
+## 📦 Dependencies
+Install directly (use `pip3` if needed):
+```bash
+pip install customtkinter matplotlib networkx win10toast
+```
+> Linux needs Tk:
+> ```bash
+> sudo apt install -y python3-tk
+> ```
+
+---
+
+## ▶️ How to Run
+1. Place `bccc.py` and this `README.md` in a folder.
+2. Start the **first node** (no peers):
    ```bash
-   git clone https://github.com/<your-username>/bccc.git
-   cd bccc
+   python bccc.py
    ```
+3. In **Start Your Node**:
+   - **Node Name:** e.g., `Node-A`
+   - **Your Port:** e.g., `5001`
+   - **Connect to Peers:** leave empty (first node)
+   - Click **🚀 Start Node**
 
-2. Run the main script:
-   ```bash
-   python3 blockchain_chat_app.py
-   ```
+### Add more nodes on the same machine
+Open new terminals and run:
+```bash
+python bccc.py
+```
+- For the second node: name `Node-B`, port `5002`, peers: `localhost:5001`
+- For a third: name `Node-C`, port `5003`, peers: `localhost:5001, localhost:5002`
 
-3. Launch the application on **multiple computers** connected to the same **LAN network**.  
-   Each instance will auto-detect peers, sync blockchain data, and display a visual dashboard.
-
----
-
-
-## 📖 Step-by-Step User Manual
-
-### 🪜 1. Setup and Launch
-1. Ensure **Python 3.8+** is installed (`python --version`).
-2. Install required libraries using:
-   ```bash
-   pip install customtkinter matplotlib networkx plyer win10toast
-   ```
-3. Place the `blockchain_chat_app.py` file and any supporting files in a single folder.
-4. Open a terminal or command prompt in that folder.
-5. Start the program:
-   ```bash
-   python3 blockchain_chat_app.py
-   ```
-6. Repeat the same steps on **all other systems** connected to the same LAN.
+### Add nodes on other machines (LAN)
+- Use the host’s LAN IP in **Connect to Peers**: `192.168.x.y:5001`
+- Allow Python in OS firewall for the chosen ports.
 
 ---
 
-### 💬 2. Sending Messages
-- Type your message in the **Chat Input Box** at the bottom of the window.  
-- Press **Enter** or click **Send**.  
-- The message is added as a **new block** and broadcast to all peers.  
-- Other peers will see your message instantly — synchronized through the blockchain.
+## 📖 Step‑by‑Step User Manual
+
+### 1) Send Messages
+- Type in the input box → **Enter** or click **📤 Send**.
+- A block is created and broadcast; the chat bubble appears locally and remotely.
+
+### 2) Send a File
+- Click **📎 File** and choose a file (≤ 50 MB).
+- File bytes are sent; a file‑TX block is added with the **SHA‑256**.
+- Files save to **~/Downloads** and are verified periodically.
+
+### 3) View the Blockchain
+- Click **🔗 Explorer** → a horizontal chain graph appears.
+- Click any block to see its hash, prev hash, time, and TX details.
+- **If a file TX is tampered/missing, its block is shown with a red accent.**
+
+### 4) Monitor Performance
+- Click **📊 Performance** to see **Latency**, **Throughput**, **Loss** over time.
+
+### 5) Fix Files (Restore)
+- Click **🛠 Fix Files** → **🔧 Fix All Problems**.
+- The node broadcasts `FILE_SYNC_REQUEST` for each missing/tampered file.
+- A healthy peer replies with `FILE_SYNC_RESPONSE`; the file is restored to Downloads.
+
+### 6) Verify Network
+- Click **🔍 Verify Network**. Your node:
+  - Runs local verification (chain linkage + file hashes).
+  - Broadcasts `VERIFY_REQUEST` to peers.
+- **Peers respond** with `VERIFY_RESPONSE { ok, issues[] }` which the console shows.
+
+### 7) Color‑Coded Peers
+- Peers are given persistent colors (stored in `peer_colors.json`).
+
+### 8) Quit Safely
+- Close the window; the app stops timers/animation and closes sockets cleanly.
 
 ---
 
-### 📁 3. File Transfer
-- Click the **Attach / Upload** button (if available) to select a file.
-- The selected file will be converted into a block and shared with all peers.
-- The blockchain records the transfer to ensure integrity and traceability.
-- All peers can view or download the file from the shared ledger.
+## 🧪 Testing (Single PC or LAN)
+
+### A) Single laptop (multi‑node)
+- Run 2–4 instances on ports **5001, 5002, 5003, …** and interconnect via `localhost:<port>`.
+
+### B) LAN
+- Devices on the same network; connect to a peer using `hostLANIP:port`.
+
+### C) Tamper Demo + Restore
+1. Send a small file.
+2. On one node, **edit or overwrite** the saved copy in **~/Downloads**.
+3. Wait ≤ 60s or click **🔍 Verify Network** → **TAMPER_ALERT** appears (not spammed).
+4. Click **🛠 Fix Files → 🔧 Fix All Problems** on any node. A good peer restores the file.
+
+> **Note:** With only **one** node running, no one can restore your tampered file. Start at least two nodes.
 
 ---
 
-### 🔍 4. Viewing the Blockchain
-- Open the **Explorer** tab in the interface.
-- Each block represents a message or file event.
-- Click on a block to view:
-  - Sender information  
-  - Timestamp  
-  - Hash and previous hash values  
-  - Data integrity status  
+## ⚙️ Configuration Knobs (in code)
+- `VERIFICATION_INTERVAL = 60` — periodic integrity scan (seconds)
+- `HEARTBEAT_INTERVAL = 12` — peer heartbeat
+- `PEER_TIMEOUT = 30` — mark peer inactive
+- `MAX_REQUESTS_PER_MINUTE = 100` — per‑peer rate limiter
+- `MAX_MESSAGE_SIZE = 100*1024*1024` (100 MB) — network payload cap
+- `MAX_FILE_SIZE = 50*1024*1024` (50 MB) — file transfer cap
+- **Dedup/Spam Control:**
+  - `message_ttl = 600` — remember seen IDs for 10 minutes
+  - `seen_cleanup_interval = 300` — prune old IDs
+  - `TAMPER_ALERT_COOLDOWN = 90` — minimum seconds between alerts for the same file
+- **UI Responsiveness:**
+  - GUI dispatcher runs frequently (≈60 ms) for snappy updates
+  - Retry backoff starts low; does not affect successful sends
 
 ---
 
-### ⚙️ 5. Monitoring Performance
-- The **Performance** shows:
-  - **Latency:** round-trip time between peers.
-  - **Throughput:** rate of data transfer.
-  - **Packet Loss:** any message drops or network delays.
-- These metrics update in real-time while chatting or transferring files.
+## 🧯 Troubleshooting
+| Symptom | Likely Cause | Fix |
+|---|---|---|
+| “application has been destroyed” on exit | After‑callbacks firing post‑close | Use the latest build (cancels timers/animation on shutdown). |
+| `f-string: unmatched ']'` | Edited a log string incorrectly | Use the provided code; avoid inserting stray braces/brackets. |
+| `'App' has no attribute _show_start_dialog` | Partial copy of the file | Re‑download the full script; the method is defined in `App`. |
+| Peers don’t appear | Not connected / firewall | Add peers in the dialog; allow Python through the firewall. |
+| Messages feel slow | Large file in flight / rate‑limit hit | Send large files when idle; default rate limit is generous. |
+| No restore happens | Only one node running | Start at least two nodes; a healthy peer must serve the file. |
 
 ---
 
-### 🚨 6. Fix Files
-- If a peer modifies or deletes a block:
-  - The system immediately detects the mismatch.
-  - All peers receive a **Tamper Alert** notification.
-  - The affected block is marked invalid.
-- You can view the marked invalid files in the blockchain visualizer.
+## 🔐 Security Enhancements Recap
+- Thread‑safe blockchain (RLock)
+- Sanitized file names + path traversal prevention
+- Bounded queues and size caps
+- Timeouts and context‑managed I/O
+- **Per‑peer** rate limiting
+- **Message ID deduplication** (CHAT/BLOCK/FILE/ALERT/VERIFY)
+- **Per‑file tamper alert cooldown** to prevent alert floods
 
 ---
 
-### 🚨 7. Verify Network
-- Check all the nodes and updates the multiple peers in the shared network about their connection status.
-
----
-
-
-### 🎨 7. Color-Coded Peers
-- Each peer (device) is assigned a **unique color** for clarity in the UI.
-- The color mapping persists between sessions using a local JSON file (`peer_colors.json`).
-
----
-
-### 🧱 8. Quitting Safely
-- To exit the program:
-  - Close the window, or  
-  - Use **Ctrl + C** in the terminal.
-- The program automatically closes sockets and saves blockchain state.
-
----
-
-### 🧠 9. Troubleshooting
-| Issue | Possible Cause | Solution |
-|-------|----------------|-----------|
-| Peers not visible | Devices not on same network | Check LAN/Wi-Fi connection |
-| No messages appearing | Firewall blocking ports | Allow Python in firewall |
-| Visualizer not updating | Matplotlib animation paused | Restart the app |
-| Tamper alert triggered unexpectedly | Manual modification or sync delay | Wait for auto-sync or restart all peers |
-
----
-
-### 🧩 10. Best Practices
-- Run the app on a **stable LAN** with good connectivity.
-- Avoid renaming or deleting blockchain files while running.
-- Keep all peers on the **same version** of the application.
-- For testing, run multiple terminal windows on a single machine with different ports.
-
----
-
-### 🧱 System Architecture
+## 🧱 System Architecture
 ```text
-+-----------------------------+
-|        User Interface       |
-| (CustomTkinter + Matplotlib)|
-+-------------+---------------+
-              |
-              v
-+-----------------------------+
-|       Blockchain Engine     |
-|  (Block creation, hashing,  |
-|  tamper verification, sync) |
-+-------------+---------------+
-              |
-              v
-+-----------------------------+
-|      Networking Layer       |
-|   (Sockets, threading, RTT) |
-+-----------------------------+
+GUI (CustomTkinter) ──► GUI Queue (batched) ──► Dispatcher
+                                  │
+                                  ▼
+                         P2P Node (sockets, rate limit,
+                         dedup, retries, heartbeats, metrics)
+                                  │
+                                  ├──► SimpleChain (append‑only, replace longest)
+                                  │
+                                  └──► File Ops (hashing, verify, sync/restore)
 ```
 
 ---
 
-## 🧪 Testing Scenarios
-
-### 🔧 0. **Node Configuration Setup (Before Testing)**
-
-- When you launch the application, you’ll see the “Configure Your Node” screen (as shown above).
-- Here’s what each field means:
-- Node Name: A custom name for your node (e.g., Alice’s Node, Node_1, etc.).
-- Your Port: The local port number for your node (default is 5001).
-- Connect to Peer (Optional): Enter another peer’s IP and port (e.g., 192.168.1.100:5001) if you want to connect to an existing node.
-- Leave it blank if this is the first node on the network.
-- Once all fields are filled, click 🚀 Start Node to initialize your blockchain node.
-
-### 1. **Blockchain Synchronization Test**
-- Run the app on **two or more computers** connected to the **same LAN**.
-- Send messages or files between peers.
-- Verify that each blockchain visualizer shows **identical blockchains** (same number of blocks, hashes, and timestamps).
-
-### 2. **Tamper Detection Test**
-- Manually modify a stored file or blockchain record.
-- Observe the **tamper alert** in the explorer.
-- The affected block will be highlighted and the alert broadcast to all peers.
-
-### 3. **Performance Analysis Test**
-- Send multiple large files or frequent messages.
-- Watch the **real-time graph** for throughput and latency performance.
-- Compare different runs to analyze network behavior.
-
-### 4. **File Transfer Verification**
-- Upload a file using the chat interface.
-- Confirm that all connected peers receive the file.
-- Verify that a new blockchain block is created containing the file’s metadata.
-
----
-
-### 🧩 Security Enhancements
-- Enforced **thread locks** for safe blockchain modification  
-- **Timeouts** and **rate limiting** to prevent flooding  
-- Sanitized **user input** and **path handling**  
-- **Context-managed resources** to prevent leaks  
-- Verified **peer requests** to avoid spoofing  
-
----
-
-### 🧪 Future Improvements
-- Encrypted peer-to-peer messaging  
-- Global key exchange mechanism  
-- Web dashboard for blockchain inspection  
-- Support for audio/file transfer blocks  
+## 🔮 Future Enhancements
+- Optional signatures for TX authenticity
+- Chunked, resumable file transfer
+- Multicast/MDNS peer discovery
+- Export/import chain snapshots
+- Web dashboard viewer
 
 ---
 
 ## 🏁 Conclusion
-
-The project successfully demonstrates how **blockchain principles** can be applied to create a **secure, decentralized communication system** within a LAN.
-It ensures **data integrity**, **peer-to-peer transparency**, and **real-time synchronization** — paving the way for more resilient local communication networks.
-
-
-### 👨‍💻 Author
-**Ilangkumaran Yogamani**  
-📧 *ilangkumaran.2024@vitstudent.ac.in* 
-
-**Ranen Abner**  
-📧 *ranen.abner2024@vitstudent.ac.in* 
+This application offers a practical, classroom‑friendly view of **distributed integrity**, **peer coordination**, and **resilience**. With deduplication, cooldowns, and visual tamper flags, it’s ideal for demonstrating how blockchain‑style systems behave under failure and recovery.
 
 ---
 
-### 📜 License
-This project is licensed under the **MIT License** — free to use and modify with proper credit.
+## 👨‍💻 Authors
+**Ilangkumaran Yogamani** — *ilangkumaran.2024@vitstudent.ac.in*  
+**Ranen Abner** — *ranen.abner2024@vitstudent.ac.in*
 
 ---
 
-### 🧠 Acknowledgements
-- **Python 3.10+**
-- **CustomTkinter** for modern UI  
-- **Matplotlib + NetworkX** for visual analytics  
-- **Socket Programming** for LAN-based communication  
-- **Blockchain architecture** for immutability and transparency
+## 📜 License
+MIT License. Use, modify, and distribute with attribution; no warranty.
 
 ---
 
-> 🧱 *“Secure communication doesn’t just connect nodes — it connects trust.”*
+## 🙏 Acknowledgements
+- **CustomTkinter**, **Tkinter**
+- **Matplotlib**, **NetworkX**
+- **Python sockets & threading**
+- Everyone who tested and reported timing/dedup issues
