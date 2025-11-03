@@ -1,7 +1,9 @@
-customtkinter==5.2.2
-plyer==2.1.0
-matplotlib==3.8.0
-networkx==3.2.1
-numpy==1.26.0
-pandas==2.1.1
-uuid==1.30
+# Python package requirements for Blockchain P2P Chat
+# OS packages may be needed:
+# - Linux: sudo apt install -y python3-tk
+# - Windows/macOS: Tk is bundled with most Python installers
+
+customtkinter>=5.2.2,<6.0.0
+matplotlib>=3.8.0,<3.10.0
+networkx>=3.2.1,<4.0.0
+win10toast>=0.9; platform_system == "Windows"
