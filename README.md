@@ -1,4 +1,4 @@
-# 🧩 Blockchain-Based LAN Chat — Secured Interactive Version
+# 🧩 Performance Analysis of Blockchain-Based Decentralized Chat and File Transfer in Local Area Networks​
 
 ### 🚀 Overview
 This project implements a **fully interactive, secure, and decentralized LAN chat application** built on **blockchain principles**.  
