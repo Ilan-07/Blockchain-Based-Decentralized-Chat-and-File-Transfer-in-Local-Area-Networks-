@@ -168,7 +168,7 @@ pip install -r requirements.txt
 ---
 
 ### 🔍 4. Viewing the Blockchain
-- Open the **Blockchain Visualizer** tab in the interface.
+- Open the **Explorer** tab in the interface.
 - Each block represents a message or file event.
 - Click on a block to view:
   - Sender information  
@@ -179,7 +179,7 @@ pip install -r requirements.txt
 ---
 
 ### ⚙️ 5. Monitoring Performance
-- The **Performance Graph** shows:
+- The **Performance** shows:
   - **Latency:** round-trip time between peers.
   - **Throughput:** rate of data transfer.
   - **Packet Loss:** any message drops or network delays.
@@ -187,14 +187,20 @@ pip install -r requirements.txt
 
 ---
 
-### 🚨 6. Tamper Detection
+### 🚨 6. Fix Files
 - If a peer modifies or deletes a block:
   - The system immediately detects the mismatch.
-  - All peers receive a **Tamper Alert** popup and notification.
-  - The affected block is quarantined or marked invalid.
-- You can view alerts in the blockchain visualizer.
+  - All peers receive a **Tamper Alert** notification.
+  - The affected block is marked invalid.
+- You can view the marked invalid files in the blockchain visualizer.
 
 ---
+
+### 🚨 7. Verify Network
+- Check all the nodes and updates the multiple peers in the shared network about their connection status.
+
+---
+
 
 ### 🎨 7. Color-Coded Peers
 - Each peer (device) is assigned a **unique color** for clarity in the UI.
@@ -270,7 +276,7 @@ pip install -r requirements.txt
 
 ### 2. **Tamper Detection Test**
 - Manually modify a stored file or blockchain record.
-- Observe the **tamper alert** in the blockchain visualizer.
+- Observe the **tamper alert** in the explorer.
 - The affected block will be highlighted and the alert broadcast to all peers.
 
 ### 3. **Performance Analysis Test**
