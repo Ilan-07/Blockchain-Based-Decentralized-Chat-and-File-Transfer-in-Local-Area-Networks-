@@ -124,7 +124,7 @@ pip install -r requirements.txt
 
 2. Run the main script:
    ```bash
-   python3 bccc.py
+   python3 blockchain_chat_app.py
    ```
 
 3. Launch the application on **multiple computers** connected to the same **LAN network**.  
@@ -141,11 +141,11 @@ pip install -r requirements.txt
    ```bash
    pip install customtkinter matplotlib networkx plyer win10toast
    ```
-3. Place the `bccc.py` file and any supporting files in a single folder.
+3. Place the `blockchain_chat_app.py` file and any supporting files in a single folder.
 4. Open a terminal or command prompt in that folder.
 5. Start the program:
    ```bash
-   python3 bccc.py
+   python3 blockchain_chat_app.py
    ```
 6. Repeat the same steps on **all other systems** connected to the same LAN.
 
